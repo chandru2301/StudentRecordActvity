@@ -56,12 +56,10 @@ public class Student {
     @Column(nullable = false)
     private String degree;
     
-    @NotBlank(message = "Class name is required")
-    @Column(name = "class_name", nullable = false)
+    @Column(name = "class_name", nullable = true)
     private String className;
     
-    @NotBlank(message = "Department is required")
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String department;
     
     @NotNull(message = "Date of birth is required")

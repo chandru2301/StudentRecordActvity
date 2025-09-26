@@ -35,12 +35,11 @@ public class RegisterRequest {
     // Student specific fields
     private String name;
     private String degree;
+    private String className;
+    private String department;
     private LocalDate dob;
     private String rollNumber;
     private StudentType type;
-    
-    // Faculty specific fields
-    private String department;
     
     public enum StudentType {
         HOSTELLER, DAY_SCHOLAR

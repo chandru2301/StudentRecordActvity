@@ -131,6 +131,8 @@ public class AuthService {
         student.setEmail(request.getEmail());
         student.setPhoneNumber(request.getPhoneNumber());
         student.setDegree(request.getDegree());
+        student.setClassName(request.getClassName());
+        student.setDepartment(request.getDepartment());
         student.setDob(request.getDob());
         student.setRollNumber(request.getRollNumber());
         student.setType(Student.StudentType.valueOf(request.getType().name()));
