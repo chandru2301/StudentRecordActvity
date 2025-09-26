@@ -22,11 +22,11 @@ const registerSchema = z.object({
   // Student fields
   name: z.string().optional(),
   degree: z.string().optional(),
+  className: z.string().optional(),
+  department: z.string().optional(),
   dob: z.string().optional(),
   rollNumber: z.string().optional(),
   type: z.enum(['HOSTELLER', 'DAY_SCHOLAR']).optional(),
-  // Faculty fields
-  department: z.string().optional(),
 }).refine((data) => {
   if (data.role === 'STUDENT') {
     return data.name && data.degree && data.dob && data.rollNumber && data.type;
@@ -70,19 +70,27 @@ const RegisterForm: React.FC = () => {
 
     try {
       await registerUser(data);
+      
+      // Navigate based on role with appropriate welcome message
       if (data.role === 'STUDENT') {
         navigate('/student/dashboard');
         toast({
           title: "Registration Successful",
-          description: "Welcome to Student Portal"
+          description: "Welcome to Student Portal! 🎓"
+        });
+      } else if (data.role === 'FACULTY') {
+        navigate('/faculty/dashboard');
+        toast({
+          title: "Registration Successful",
+          description: "Welcome to Faculty Portal! 👨‍🏫"
         });
       } else {
-        navigate('/faculty/dashboard');
+        navigate('/admin/dashboard');
+        toast({
+          title: "Registration Successful",
+          description: "Welcome to Admin Portal! ⚙️"
+        });
       }
-      toast({
-        title: "Registration Successful",
-        description: "Welcome to Faculty Portal"
-      });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
@@ -223,6 +231,34 @@ const RegisterForm: React.FC = () => {
                   />
                   {errors.degree && (
                     <p className="text-sm text-red-500">{errors.degree.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="className">Class Name</Label>
+                  <Input
+                    id="className"
+                    type="text"
+                    placeholder="Enter your class name"
+                    {...register('className')}
+                    className={errors.className ? 'border-red-500' : ''}
+                  />
+                  {errors.className && (
+                    <p className="text-sm text-red-500">{errors.className.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="department">Department</Label>
+                  <Input
+                    id="department"
+                    type="text"
+                    placeholder="Enter your department"
+                    {...register('department')}
+                    className={errors.department ? 'border-red-500' : ''}
+                  />
+                  {errors.department && (
+                    <p className="text-sm text-red-500">{errors.department.message}</p>
                   )}
                 </div>
 

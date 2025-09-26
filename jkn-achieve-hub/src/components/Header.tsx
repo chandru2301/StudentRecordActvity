@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Menu, X, ChevronDown, LogOut, User, Eye, Settings } from "lucide-react";
+import { useRole } from "../hooks/useRole";
 import { useAuth } from "../contexts/AuthContext";
 import {
   DropdownMenu,
@@ -14,6 +15,15 @@ import {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { 
+    displayName, 
+    profileInfo, 
+    navigationItems, 
+    isStudent, 
+    isFaculty, 
+    isAdmin,
+    defaultRoute 
+  } = useRole();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -31,47 +41,24 @@ const Header = () => {
   };
 
   const handleDashboardClick = () => {
-    navigate('/dashboard');
+    navigate(defaultRoute);
   };
 
   const handleViewProfile = () => {
-    if (user?.role === 'STUDENT') {
+    if (isStudent) {
       navigate('/student/profile');
-    } else if (user?.role === 'FACULTY') {
+    } else if (isFaculty) {
       navigate('/faculty/profile');
+    } else if (isAdmin) {
+      navigate('/admin/profile');
     }
   };
 
-  // Dynamic navigation based on authentication status
-  const getNavigationItems = () => {
-    const baseItems = [
-      { name: "Home", href: "/" },
-      { name: "About", href: "#about" },
-      { name: "Services", href: "#services" },
-    ];
-
-    if (user) {
-      // User is logged in - show dashboard and user-specific items
-      return [
-        ...baseItems,
-        { name: "Dashboard", href: "/dashboard" },
-        { name: "Analytics", href: "/analytics" },
-        { name: "Attendance", href: "/attendance" },
-        { name: "Help", href: "#help" },
-      ];
-    } else {
-      // User is not logged in - show login option
-      return [
-        ...baseItems,
-        { name: "Analytics", href: "/analytics" },
-        { name: "Attendance", href: "/attendance" },
-        { name: "Login", href: "/login" },
-        { name: "Help", href: "#help" },
-      ];
-    }
-  };
-
-  const navigation = getNavigationItems();
+  // Filter navigation items based on authentication and permissions
+  const filteredNavigation = navigationItems.filter(item => {
+    if (item.requiresAuth && !user) return false;
+    return true;
+  });
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200/50">
@@ -92,7 +79,7 @@ const Header = () => {
           {/* Conditional Navigation - Only show for non-logged in users */}
           {!user && (
             <nav className="hidden lg:flex items-center space-x-2">
-              {navigation.map((item, index) => (
+              {filteredNavigation.map((item, index) => (
                 item.href.startsWith('#') ? (
                   <a
                     key={item.name}
@@ -125,17 +112,19 @@ const Header = () => {
               <>
                 <div className="hidden sm:flex items-center space-x-3">
                   <Badge 
-                    variant={user.role === 'STUDENT' ? 'default' : 'secondary'} 
+                    variant={isStudent ? 'default' : isFaculty ? 'secondary' : 'destructive'} 
                     className={`px-3 py-1 text-xs font-semibold shadow-md hover:shadow-lg transition-all duration-300 ${
-                      user.role === 'STUDENT' 
+                      isStudent 
                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700' 
-                        : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700'
+                        : isFaculty
+                        ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700'
+                        : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
                     }`}
                   >
-                    {user.role === 'STUDENT' ? '🎓 Student' : '  Faculty'}
+                    {isStudent ? '🎓 Student' : isFaculty ? '👨‍🏫 Faculty' : '⚙️ Admin'}
                   </Badge>
                   <span className="text-sm font-medium text-gray-700">
-                    {user.username}
+                    {profileInfo.name}
                   </span>
                 </div>
                 
@@ -152,8 +141,9 @@ const Header = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="px-3 py-2">
-                      <p className="text-sm font-medium text-gray-900">{user.profile?.name || user.username}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-sm font-medium text-gray-900">{profileInfo.name}</p>
+                      <p className="text-xs text-gray-500">{profileInfo.email}</p>
+                      <p className="text-xs text-gray-400">{profileInfo.role}</p>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleViewProfile} className="cursor-pointer">
@@ -224,7 +214,7 @@ const Header = () => {
           }`}>
             <div className="py-6 border-t border-gray-200/50 bg-white/95 backdrop-blur-sm">
               <div className="flex flex-col space-y-3">
-                {navigation.map((item, index) => (
+                {filteredNavigation.map((item, index) => (
                   item.href.startsWith('#') ? (
                     <a
                       key={item.name}

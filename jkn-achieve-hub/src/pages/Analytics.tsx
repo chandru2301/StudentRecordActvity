@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import Layout from "@/components/Layout";
 
 const Analytics = () => {
   const studentData = [
@@ -43,8 +44,8 @@ const Analytics = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+    <Layout>
+      <div className="space-y-8">
         <div className="mb-8">
           <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
             Performance Analytics Dashboard
@@ -165,7 +166,7 @@ const Analytics = () => {
           </Card>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,16 +1,17 @@
 import api from './authService';
+import { studentService } from './studentService';
 
 // Service for fetching profile-related data
 export const profileService = {
   // Fetch student-specific data
   async getStudentData(studentId: number) {
     try {
-      // These would be actual API calls in a real application
+      // Use the new student service for better organization
       const [feedbacks, performance, parents, documents] = await Promise.all([
-        this.getStudentFeedbacks(studentId),
-        this.getStudentPerformance(studentId),
-        this.getStudentParents(studentId),
-        this.getStudentDocuments(studentId)
+        studentService.getStudentFeedback(studentId),
+        studentService.getStudentPerformance(studentId),
+        studentService.getStudentParents(studentId),
+        studentService.getStudentDocuments(studentId)
       ]);
 
       return {
@@ -49,25 +50,21 @@ export const profileService = {
     }
   },
 
-  // Individual API methods (these would be real API endpoints)
+  // Individual API methods - now using student service
   async getStudentFeedbacks(studentId: number) {
-    // return api.get(`/students/${studentId}/feedbacks`);
-    return Promise.resolve([]); // Mock for now
+    return studentService.getStudentFeedback(studentId);
   },
 
   async getStudentPerformance(studentId: number) {
-    // return api.get(`/students/${studentId}/performance`);
-    return Promise.resolve([]); // Mock for now
+    return studentService.getStudentPerformance(studentId);
   },
 
   async getStudentParents(studentId: number) {
-    // return api.get(`/students/${studentId}/parents`);
-    return Promise.resolve([]); // Mock for now
+    return studentService.getStudentParents(studentId);
   },
 
   async getStudentDocuments(studentId: number) {
-    // return api.get(`/students/${studentId}/documents`);
-    return Promise.resolve([]); // Mock for now
+    return studentService.getStudentDocuments(studentId);
   },
 
   async getStudentSubmissions(facultyId: number) {

@@ -40,10 +40,14 @@ const LoginForm: React.FC = () => {
 
     try {
       await login(data.usernameOrEmail, data.password, data.captcha);
+      // Navigation will be handled by the role management system
+      // The user will be redirected to their default route based on role
       if (user?.role === 'STUDENT') {
         navigate('/student/dashboard');
-      } else {
+      } else if (user?.role === 'FACULTY') {
         navigate('/faculty/dashboard');
+      } else {
+        navigate('/admin/dashboard');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
